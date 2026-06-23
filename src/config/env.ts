@@ -1,5 +1,4 @@
 import {z} from "zod";
-import "dotenv/config";
 
 const envSchema = z.object({
     NODE_ENV:z.enum(["development", "test", "production"]).default("production"),
@@ -10,6 +9,7 @@ const envSchema = z.object({
     JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
     JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
 });
+
 
 const parsed = envSchema.safeParse(process.env);
 
