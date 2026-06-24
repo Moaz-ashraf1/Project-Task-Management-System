@@ -5,6 +5,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import  globalErrorHandler  from "./shared/middlewares/error.middleware";
+import authRouter from "./domain_modules/auth/auth.router";
 
 
 const app = express();
@@ -19,9 +20,7 @@ app.use(cookieParser());
 
 app.use(morgan("dev"));
 
-app.get("/health", (_req, res) => {
-  res.json({ status: "ok" });
-});
+app.use("/api/v1/auth", authRouter);
 
 
 app.use(globalErrorHandler);

@@ -1,8 +1,6 @@
 declare namespace Express {
-    interface Request{
-        user?:{
-            id: string;
-            role:"admin" | "member"
-        }
-    }
+  interface Request {
+    userId?: string;
+    userRole?: string;
+  }
 }

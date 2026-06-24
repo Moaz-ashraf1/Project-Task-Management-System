@@ -13,9 +13,8 @@ const seed = async () => {
   await AppDataSource.initialize();
   console.log("✅ Database connected");
 
-await AppDataSource.query(`TRUNCATE TABLE tasks, projects, users RESTART IDENTITY CASCADE`);
-console.log("🗑️ Existing data cleared");
-console.log("🗑️ Existing data cleared");
+  await AppDataSource.query(`TRUNCATE TABLE tasks, projects, users RESTART IDENTITY CASCADE`);
+   console.log("🗑️ Existing data cleared");
 
   const hashedPassword = await bcrypt.hash("password123", 10);
 
