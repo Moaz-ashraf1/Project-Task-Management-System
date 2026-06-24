@@ -7,10 +7,14 @@
     "outDir": "./dist",
 
     "strict": true,
+    "strictPropertyInitialization": false,
 
     "esModuleInterop": true,
     "skipLibCheck": true,
 
-    "types": ["node"]
+    "types": ["node"],
+
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   }
 }

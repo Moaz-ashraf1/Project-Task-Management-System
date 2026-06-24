@@ -8,7 +8,7 @@ import { Task } from "../domain_modules/task/task.entity";
 export const AppDataSource = new DataSource({
     type:"postgres",
     url: env.DATABASE_URL,
-    entities:[],
+    entities: [User, Project, Task],
     synchronize:env.NODE_ENV === "development",
     logging:env.NODE_ENV === "development",
 
