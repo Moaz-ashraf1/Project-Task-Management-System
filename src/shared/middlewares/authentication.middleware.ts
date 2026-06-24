@@ -21,6 +21,8 @@ export const authenticate = asyncHandler(
     req.userId = user.id;
     req.userRole = user.role;
 
+    console.log( req.userId );
+
     next();
   }
 );

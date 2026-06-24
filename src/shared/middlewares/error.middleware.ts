@@ -9,16 +9,19 @@ const globalErrorHandler = (
   next: NextFunction
 ) => {
 
+
   if (err instanceof ApiError) {
     return res.status(err.statusCode).json({
       status: "error",
       message: err.message,
+      
     });
   }
 
   res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
     status: "error",
     message: "Internal server error",
+    error: err.message
   });
 };
 
