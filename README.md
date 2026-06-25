@@ -47,7 +47,7 @@ graph TB
     Admin --> Auth
     Admin --> Projects
     Admin --> Tasks
-    Admin --> AllData["📊 Global Access (All Users Data)"]
+    Admin --> ViewAll["📊 View All Projects & Tasks"]
 ```
 
 ---
@@ -244,11 +244,13 @@ src/
 
 ## Roles & Permissions
 
-| Action              | Member | Admin |
-|--------------------|--------|-------|
-| Register / Login    | ✅     | ✅    |
-| Manage own projects | ✅     | ✅    |
-| Manage own tasks    | ✅     | ✅    |
+| Action                        | Member | Admin |
+|-------------------------------|--------|-------|
+| Register / Login              | ✅     | ✅    |
+| Manage own projects           | ✅     | ✅    |
+| Manage own tasks              | ✅     | ✅    |
+| View all users' projects      | ❌     | ✅    |
+| View all users' tasks         | ❌     | ✅    |
 
 > Admin account is created via seed script — not through registration.
 
@@ -316,6 +318,8 @@ npm run dev      # Start development server with hot reload
 npm run build    # Compile TypeScript to JavaScript
 npm run start    # Run compiled JavaScript
 npm run seed     # Seed database with fake data (100 users, 50 projects, 500 tasks)
+npm run migration:run     # Run pending migrations
+npm run migration:revert  # Revert last migration
 ```
 
 ---
