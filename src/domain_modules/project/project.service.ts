@@ -5,8 +5,8 @@ import { CreateProjectDTO, UpdateProjectDTO } from "./project.schema";
 import { ProjectNotFoundError } from "./exceptions/ProjectNotFoundError";
 import { ProjectOwnerForbiddenError } from "./exceptions/ProjectOwnerForbiddenError";
 
-export const getAllProjects = async () => {
-  return projectRepo.projectRepository.findAllProjects();
+export const getAllProjects = async (userId: string) => {
+  return await projectRepo.projectRepository.findProjectsByOwnerId(userId);
 };
 
 export const getProjectById = async (id: string) => {

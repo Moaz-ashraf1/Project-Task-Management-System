@@ -6,7 +6,7 @@ import {ProjectParams} from '../../shared/types/project.types';
 import {UpdateProjectDTO} from './project.schema';
 
 export const getAllProjects =asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
-    const projects = await projectService.getAllProjects();
+    const projects = await projectService.getAllProjects(req.userId!);
     res.status(StatusCodes.OK).json({ status: "success", data: { projects } });
 });
 

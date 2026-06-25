@@ -6,6 +6,7 @@ export const projectRepository = {
         return AppDataSource.getRepository(Project).find({relations:["owner"]});
     },
 
+
     async findProjectById(id:string): Promise<Project|null>{
         return AppDataSource.getRepository(Project).findOne({where:{id},relations:["owner"]})
     },
