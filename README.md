@@ -3,7 +3,7 @@
 > A production-ready RESTful API for managing projects and tasks, built with Node.js, TypeScript, Express.js, PostgreSQL, and TypeORM.
 
 ![Node.js](https://img.shields.io/badge/Node.js-v18+-green)
-![TypeScript](https://img.shields.io/badge/TypeScript-6.x-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
 ![Docker](https://img.shields.io/badge/Docker-supported-blue)
 
@@ -12,8 +12,8 @@
 ## Tech Stack
 
 | Category         | Technology           |
-|-----------------|----------------------|
-| Runtime          | Node.js v18+        |
+| ---------------- | -------------------- |
+| Runtime          | Node.js v18+         |
 | Language         | TypeScript           |
 | Framework        | Express.js           |
 | Database         | PostgreSQL 15        |
@@ -207,7 +207,7 @@ src/
 ### Auth — `/api/v1/auth`
 
 | Method | Endpoint    | Auth | Description                     |
-|--------|-------------|------|---------------------------------|
+| ------ | ----------- | ---- | ------------------------------- |
 | POST   | `/register` | ❌   | Register a new user             |
 | POST   | `/login`    | ❌   | Login and receive access token  |
 | POST   | `/refresh`  | ❌   | Refresh access token via cookie |
@@ -215,7 +215,7 @@ src/
 ### Projects — `/api/v1/projects`
 
 | Method | Endpoint | Auth | Description                       |
-|--------|----------|------|-----------------------------------|
+| ------ | -------- | ---- | --------------------------------- |
 | GET    | `/`      | ✅   | Get all projects for current user |
 | POST   | `/`      | ✅   | Create a new project              |
 | GET    | `/:id`   | ✅   | Get project by ID                 |
@@ -225,7 +225,7 @@ src/
 ### Tasks — `/api/v1/projects/:projectId/tasks`
 
 | Method | Endpoint | Auth | Description                 |
-|--------|----------|------|-----------------------------|
+| ------ | -------- | ---- | --------------------------- |
 | GET    | `/`      | ✅   | Get all tasks for a project |
 | POST   | `/`      | ✅   | Create a task (owner only)  |
 | GET    | `/:id`   | ✅   | Get task by ID              |
@@ -244,13 +244,13 @@ src/
 
 ## Roles & Permissions
 
-| Action                        | Member | Admin |
-|-------------------------------|--------|-------|
-| Register / Login              | ✅     | ✅    |
-| Manage own projects           | ✅     | ✅    |
-| Manage own tasks              | ✅     | ✅    |
-| View all users' projects      | ❌     | ✅    |
-| View all users' tasks         | ❌     | ✅    |
+| Action                   | Member | Admin |
+| ------------------------ | ------ | ----- |
+| Register / Login         | ✅     | ✅    |
+| Manage own projects      | ✅     | ✅    |
+| Manage own tasks         | ✅     | ✅    |
+| View all users' projects | ❌     | ✅    |
+| View all users' tasks    | ❌     | ✅    |
 
 > Admin account is created via seed script — not through registration.
 
@@ -280,6 +280,7 @@ JWT_REFRESH_EXPIRES_IN=7d
 ## How to Run Locally
 
 ### Prerequisites
+
 - Node.js v18+
 - Docker & Docker Compose
 
@@ -309,15 +310,17 @@ npm run dev
 
 Server runs at: `http://localhost:3000`
 
+Swagger UI: `http://localhost:3000/api/v1/docs`
+
 ---
 
 ## Available Scripts
 
 ```bash
-npm run dev      # Start development server with hot reload
-npm run build    # Compile TypeScript to JavaScript
-npm run start    # Run compiled JavaScript
-npm run seed     # Seed database with fake data (100 users, 50 projects, 500 tasks)
+npm run dev               # Start development server with hot reload
+npm run build             # Compile TypeScript to JavaScript
+npm run start             # Run compiled JavaScript
+npm run seed              # Seed database with fake data (100 users, 50 projects, 500 tasks)
 npm run migration:run     # Run pending migrations
 npm run migration:revert  # Revert last migration
 ```
@@ -353,3 +356,4 @@ docker compose down -v
 - ✅ Global Error Handling
 - ✅ Domain-driven Module Structure
 - ✅ Nested Routes (`/projects/:projectId/tasks`)
+- ✅ Swagger API Documentation
