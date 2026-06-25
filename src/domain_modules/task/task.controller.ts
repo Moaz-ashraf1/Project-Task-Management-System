@@ -2,10 +2,15 @@ import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 import * as taskService from "./task.service";
 import asyncHandler from "express-async-handler";
+import { TaskStatus,TaskPriority } from "./task.entity";
 
 export const getTasksByProject = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const { projectId } = req.params as { projectId: string };
-    const tasks = await taskService.getTasksByProject(projectId);
+    const {status,priority} = req.query as {
+        status?:TaskStatus,
+        priority?:TaskPriority
+    };
+    const tasks = await taskService.getTasksByProject(projectId, { status, priority });
     res.status(StatusCodes.OK).json({ status: "success", data: { tasks } });
   
 });

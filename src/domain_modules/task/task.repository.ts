@@ -1,10 +1,14 @@
 import { AppDataSource } from "../../config/database";
-import { Task } from "./task.entity";
+import { Task, TaskStatus,TaskPriority } from "./task.entity";
 
 export const taskRepository = {
-  async findTasksByProjectId(project_id: string): Promise<Task[]> {
+  async findTasksByProjectId(project_id: string , filters?:{status?:TaskStatus,priority?:TaskPriority}): Promise<Task[]> {
     return AppDataSource.getRepository(Task).find({
-      where: { project_id },
+      where: {
+           project_id ,
+         ...(filters?.status && { status: filters.status }) ,
+          ...(filters?.priority && { priority: filters.priority }) 
+        },
       relations: ["assignee"],
     });
   },
