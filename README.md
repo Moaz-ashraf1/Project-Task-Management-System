@@ -1,38 +1,27 @@
-# Project & Task Management API
+# Project Task Management System
 
 > A production-ready RESTful API for managing projects and tasks, built with Node.js, TypeScript, Express.js, PostgreSQL, and TypeORM.
 
 ![Node.js](https://img.shields.io/badge/Node.js-v18+-green)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-6.x-blue)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
 ![Docker](https://img.shields.io/badge/Docker-supported-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
 
 ---
 
-## Features
+## Tech Stack
 
-**Authentication & Authorization**
-- User registration & login with JWT
-- Refresh token rotation with HttpOnly cookies
-- Role-based access control (Admin / Member)
-- Ownership authorization — users can only access their own resources
-
-**Project Management**
-- Full CRUD with soft delete
-- Search, pagination & sorting
-
-**Task Management**
-- Full CRUD with soft delete
-- Filter by status & priority
-- Search, pagination & sorting
-
-**Developer Experience**
-- Swagger UI at `/api/docs`
-- Global error handling
-- Request validation with Zod
-- Docker Compose support
-- Database migrations & seeders
+| Category         | Technology           |
+|-----------------|----------------------|
+| Runtime          | Node.js v18+        |
+| Language         | TypeScript           |
+| Framework        | Express.js           |
+| Database         | PostgreSQL 15        |
+| ORM              | TypeORM              |
+| Authentication   | JWT + Refresh Tokens |
+| Validation       | Zod                  |
+| Password Hashing | bcrypt               |
+| Containerization | Docker               |
 
 ---
 
@@ -41,85 +30,51 @@
 ```mermaid
 graph TB
 
-    %% Users
     Member(["👤 Member"])
     Admin(["👑 Admin"])
 
-    %% System Modules
     subgraph SYSTEM ["📦 System Modules"]
         direction TB
-
         Auth["🔐 Authentication"]
-        Profile["👤 Profile"]
         Projects["📁 Projects"]
         Tasks["✅ Tasks"]
     end
 
-    %% Member Permissions
     Member --> Auth
-    Member --> Profile
     Member --> Projects
     Member --> Tasks
 
-    %% Admin Permissions (extends Member + extra access)
     Admin --> Auth
-    Admin --> Profile
     Admin --> Projects
     Admin --> Tasks
-
     Admin --> AllData["📊 Global Access (All Users Data)"]
 ```
 
 ---
 
-## Tech Stack
-
-| Category        | Technology              |
-|----------------|--------------------------|
-| Runtime         | Node.js v18+            |
-| Language        | TypeScript               |
-| Framework       | Express.js               |
-| Database        | PostgreSQL                |
-| ORM             | TypeORM                  |
-| Authentication  | JWT + Refresh Tokens     |
-| Validation      | Zod                      |
-| Password Hashing| bcrypt                   |
-| Documentation   | Swagger / OpenAPI        |
-| Containerization| Docker                   |
-
----
-
 ## Architecture
-
-The application follows a **Layered Architecture** with the **Repository Pattern**:
 
 ```mermaid
 flowchart TB
 
-    %% External Layer
     Client["🌐 Client / HTTP Request"]
 
-    %% API Layer
     subgraph API ["🚪 API Layer"]
         Routes["Routes\n(Define endpoints & middleware)"]
         Controllers["Controllers\n(Request handling & responses)"]
     end
 
-    %% Business Layer
     subgraph CORE ["🧠 Business Layer"]
         Services["Services\n(Business logic & rules)"]
     end
 
-    %% Data Layer
     subgraph DATA ["💾 Data Layer"]
         Repositories["Repositories\n(Database operations)"]
         Entities["Entities\n(DB schema representation)"]
     end
 
-    %% Database
     DB[("🗄️ PostgreSQL")]
 
-    %% Flow
     Client --> Routes
     Routes --> Controllers
     Controllers --> Services
@@ -130,7 +85,7 @@ flowchart TB
 
 ---
 
-## Database Design
+## Database Design (ERD)
 
 ```mermaid
 erDiagram
@@ -139,109 +94,51 @@ erDiagram
         UUID id PK
         VARCHAR name
         VARCHAR email "UNIQUE"
-        VARCHAR password_hash
+        VARCHAR password
         ENUM role "admin | member"
-        BOOLEAN is_active
-        TIMESTAMP created_at
-        TIMESTAMP updated_at
-        TIMESTAMP deleted_at
+        TIMESTAMP createdAt
+        TIMESTAMP updatedAt
     }
 
     PROJECTS {
         UUID id PK
-        VARCHAR title
+        VARCHAR name
         TEXT description
         ENUM status "active | archived"
         UUID owner_id FK
-        UUID created_by
-        UUID updated_by
-        TIMESTAMP created_at
-        TIMESTAMP updated_at
-        TIMESTAMP deleted_at
+        TIMESTAMP createdAt
+        TIMESTAMP updatedAt
     }
 
     TASKS {
         UUID id PK
         VARCHAR title
         TEXT description
-        ENUM status "pending | in_progress | done"
+        ENUM status "todo | in_progress | done"
         ENUM priority "low | medium | high"
-        DATE due_date
+        TIMESTAMP dueDate
         UUID project_id FK
-        UUID created_by
-        UUID updated_by
-        TIMESTAMP created_at
-        TIMESTAMP updated_at
-        TIMESTAMP deleted_at
+        UUID assignee_id FK
+        TIMESTAMP createdAt
+        TIMESTAMP updatedAt
     }
 
     REFRESH_TOKENS {
         UUID id PK
-        VARCHAR token_hash
-        UUID user_id FK
-        TIMESTAMP expires_at
+        VARCHAR tokenHash "UNIQUE"
+        UUID userId FK
+        TIMESTAMP expiresAt
         BOOLEAN revoked
-        VARCHAR ip_address
-        VARCHAR device_info
-        TIMESTAMP created_at
+        VARCHAR ipAddress
+        VARCHAR deviceInfo
+        TIMESTAMP createdAt
     }
 
-    %% Relationships
     USERS ||--o{ PROJECTS : "owns"
     PROJECTS ||--o{ TASKS : "contains"
+    USERS ||--o{ TASKS : "assigned to"
     USERS ||--o{ REFRESH_TOKENS : "has"
 ```
-
----
-
-## API Overview
-
-> Full interactive documentation available at: **`http://localhost:3000/api/docs`**
-
-### Auth — `/api/auth`
-| Method | Endpoint              | Description                        |
-|--------|-----------------------|------------------------------------|
-| POST   | `/api/auth/register`  | Register a new user                |
-| POST   | `/api/auth/login`     | Login and receive access token     |
-| POST   | `/api/auth/refresh`   | Refresh access token via cookie    |
-| POST   | `/api/auth/logout`    | Revoke refresh token               |
-
-### Users — `/api/users`
-| Method | Endpoint         | Description              |
-|--------|------------------|--------------------------|
-| GET    | `/api/users/me`  | Get authenticated user   |
-| PATCH  | `/api/users/me`  | Update profile           |
-| DELETE | `/api/users/me`  | Delete account           |
-
-### Projects — `/api/projects`
-| Method | Endpoint             | Description            |
-|--------|----------------------|------------------------|
-| POST   | `/api/projects`      | Create project         |
-| GET    | `/api/projects`      | Get all user projects  |
-| GET    | `/api/projects/:id`  | Get project by ID      |
-| PATCH  | `/api/projects/:id`  | Update project         |
-| DELETE | `/api/projects/:id`  | Soft delete project    |
-
-### Tasks — `/api/projects/:projectId/tasks`
-| Method | Endpoint                               | Description        |
-|--------|----------------------------------------|--------------------|
-| POST   | `/api/projects/:projectId/tasks`       | Create task        |
-| GET    | `/api/projects/:projectId/tasks`       | Get project tasks  |
-| GET    | `/api/projects/:projectId/tasks/:id`   | Get task by ID     |
-| PATCH  | `/api/projects/:projectId/tasks/:id`   | Update task        |
-| DELETE | `/api/projects/:projectId/tasks/:id`   | Soft delete task   |
-
-### Query Parameters (List Endpoints)
-
-| Parameter | Type   | Example                  |
-|-----------|--------|--------------------------|
-| page      | number | `?page=1`                |
-| limit     | number | `?limit=10`              |
-| sort      | string | `?sort=createdAt`        |
-| order     | string | `?order=desc`            |
-| search    | string | `?search=backend`        |
-| status    | string | `?status=done`           |
-| priority  | string | `?priority=high`         |
 
 ---
 
@@ -250,98 +147,156 @@ erDiagram
 ```
 src/
 ├── config/
-│   ├── database.ts
-│   └── env.ts
+│   ├── database.ts          # TypeORM DataSource
+│   └── env.ts               # Zod env validation
+│
 ├── database/
-│   ├── migrations/
-│   └── seeds/
-├── common/
-│   ├── enums/
-│   ├── exceptions/
+│   └── seed.ts              # Faker seed data
+│
+├── modules/
+│   ├── auth/
+│   │   ├── exceptions
+│   │   ├── refresh-token.entity.ts
+│   │   ├── auth.repository.ts
+│   │   ├── auth.service.ts
+│   │   ├── auth.controller.ts
+│   │   ├── auth.schema.ts
+│   │   └── auth.routes.ts
+│   │
+│   ├── user/
+│   │   └── user.entity.ts
+│   │
+│   ├── project/
+│   │   ├── exceptions
+│   │   ├── project.entity.ts
+│   │   ├── project.repository.ts
+│   │   ├── project.service.ts
+│   │   ├── project.controller.ts
+│   │   ├── project.schema.ts
+│   │   └── project.routes.ts
+│   │
+│   └── task/
+│   │   ├── exceptions
+│       ├── task.entity.ts
+│       ├── task.repository.ts
+│       ├── task.service.ts
+│       ├── task.controller.ts
+│       ├── task.schema.ts
+│       └── task.routes.ts
+│
+├── shared/
 │   ├── middlewares/
+│   │   ├── auth.middleware.ts      # JWT verify
+│   │   ├── validate.middleware.ts  # Zod validation
+│   │   └── error.middleware.ts     # Global error handler
 │   ├── types/
+│   │   └── express.d.ts            # Extend Request type
 │   └── utils/
-└── modules/
-    ├── auth/
-    │   ├── dto/
-    │   ├── validations/
-    │   ├── repositories/
-    │   ├── auth.controller.ts
-    │   ├── auth.service.ts
-    │   └── auth.routes.ts
-    ├── users/
-    │   ├── dto/
-    │   ├── entities/
-    │   ├── repositories/
-    │   ├── user.controller.ts
-    │   ├── user.service.ts
-    │   └── user.routes.ts
-    ├── projects/
-    │   ├── dto/
-    │   ├── validations/
-    │   ├── entities/
-    │   ├── repositories/
-    │   ├── project.controller.ts
-    │   ├── project.service.ts
-    │   └── project.routes.ts
-    └── tasks/
-        ├── dto/
-        ├── validations/
-        ├── entities/
-        ├── repositories/
-        ├── task.controller.ts
-        ├── task.service.ts
-        └── task.routes.ts
+│       ├── jwt.utils.ts
+│       ├── hash.utils.ts
+│       └── ApiError.ts
+│
+├── app.ts
+└── server.ts
 ```
+
+---
+
+## API Endpoints
+
+### Auth — `/api/v1/auth`
+
+| Method | Endpoint    | Auth | Description                     |
+|--------|-------------|------|---------------------------------|
+| POST   | `/register` | ❌   | Register a new user             |
+| POST   | `/login`    | ❌   | Login and receive access token  |
+| POST   | `/refresh`  | ❌   | Refresh access token via cookie |
+
+### Projects — `/api/v1/projects`
+
+| Method | Endpoint | Auth | Description                       |
+|--------|----------|------|-----------------------------------|
+| GET    | `/`      | ✅   | Get all projects for current user |
+| POST   | `/`      | ✅   | Create a new project              |
+| GET    | `/:id`   | ✅   | Get project by ID                 |
+| PUT    | `/:id`   | ✅   | Update project (owner only)       |
+| DELETE | `/:id`   | ✅   | Delete project (owner only)       |
+
+### Tasks — `/api/v1/projects/:projectId/tasks`
+
+| Method | Endpoint | Auth | Description                 |
+|--------|----------|------|-----------------------------|
+| GET    | `/`      | ✅   | Get all tasks for a project |
+| POST   | `/`      | ✅   | Create a task (owner only)  |
+| GET    | `/:id`   | ✅   | Get task by ID              |
+| PUT    | `/:id`   | ✅   | Update task (owner only)    |
+| DELETE | `/:id`   | ✅   | Delete task (owner only)    |
+
+---
+
+## Authentication
+
+- **Access Token** — JWT, expires in 15 minutes, sent in response body
+- **Refresh Token** — JWT, expires in 7 days, stored in HttpOnly cookie
+- Refresh tokens are stored in the database and revoked on use (rotation)
+
+---
+
+## Roles & Permissions
+
+| Action              | Member | Admin |
+|--------------------|--------|-------|
+| Register / Login    | ✅     | ✅    |
+| Manage own projects | ✅     | ✅    |
+| Manage own tasks    | ✅     | ✅    |
+
+> Admin account is created via seed script — not through registration.
 
 ---
 
 ## Environment Variables
 
-Copy `.env.example` to `.env` and fill in your values:
+Create a `.env` file based on `.env.example`:
 
 ```env
-# App
-PORT=3000
 NODE_ENV=development
+PORT=3000
 
-# Database
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=project_management
-DB_USER=postgres
-DB_PASSWORD=your_password
+POSTGRES_USER=project_user
+POSTGRES_PASSWORD=project_pass_123
+POSTGRES_DB=project_management_db
+DATABASE_URL=postgresql://project_user:project_pass_123@localhost:5433/project_management_db
 
-# JWT
-JWT_SECRET=your_access_secret
-JWT_EXPIRES_IN=15m
-
-JWT_REFRESH_SECRET=your_refresh_secret
+JWT_ACCESS_SECRET=your_super_secret_access_key_min_32_chars
+JWT_REFRESH_SECRET=your_super_secret_refresh_key_min_32_chars
+JWT_ACCESS_EXPIRES_IN=15m
 JWT_REFRESH_EXPIRES_IN=7d
-
-# Cookie
-COOKIE_SECRET=your_cookie_secret
 ```
 
 ---
 
-## Installation
+## How to Run Locally
 
-**Prerequisites:** Node.js v18+, PostgreSQL
+### Prerequisites
+- Node.js v18+
+- Docker & Docker Compose
+
+### Steps
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/project-task-management-api.git
-cd project-task-management-api
+git clone https://github.com/Moaz-ashraf1/Project-Task-Management-System.git
+cd Project-Task-Management-System
 
 # 2. Install dependencies
 npm install
 
 # 3. Set up environment variables
 cp .env.example .env
+# Edit .env with your values
 
-# 4. Run database migrations
-npm run migration:run
+# 4. Start the database
+docker compose up -d
 
 # 5. (Optional) Seed the database
 npm run seed
@@ -350,40 +305,35 @@ npm run seed
 npm run dev
 ```
 
+Server runs at: `http://localhost:3000`
+
+---
+
+## Available Scripts
+
+```bash
+npm run dev      # Start development server with hot reload
+npm run build    # Compile TypeScript to JavaScript
+npm run start    # Run compiled JavaScript
+npm run seed     # Seed database with fake data (100 users, 50 projects, 500 tasks)
+```
+
 ---
 
 ## Docker
 
 ```bash
-# Start all services
-docker-compose up --build
+# Start database
+docker compose up -d
 
 # Stop containers
-docker-compose down
+docker compose down
+
+# Stop and remove volumes
+docker compose down -v
 ```
 
----
-
-## API Documentation
-
-Swagger UI is available at:
-
-```
-http://localhost:3000/api/docs
-```
-
----
-
-## Roles & Permissions
-
-| Action                     | Member | Admin |
-|---------------------------|--------|-------|
-| Manage own profile        | ✅     | ✅    |
-| Manage own projects       | ✅     | ✅    |
-| Manage own tasks          | ✅     | ✅    |
-| Access other users' data  | ❌     | ✅    |
-| Access all projects       | ❌     | ✅    |
-| Manage user accounts      | ❌     | ✅    |
+> Note: The app runs locally via `npm run dev`. Only the database runs in Docker.
 
 ---
 
@@ -392,11 +342,10 @@ http://localhost:3000/api/docs
 - ✅ TypeScript
 - ✅ Repository Pattern
 - ✅ Refresh Token Rotation
-- ✅ RBAC (Admin / Member)
-- ✅ Soft Delete
+- ✅ Role-based Access Control (Admin / Member)
 - ✅ Ownership Authorization
-- ✅ Search, Pagination & Sorting
-- ✅ Swagger Documentation
 - ✅ Docker Compose
-- ✅ Database Migrations & Seeders
+- ✅ Database Seed with Faker.js
 - ✅ Global Error Handling
+- ✅ Domain-driven Module Structure
+- ✅ Nested Routes (`/projects/:projectId/tasks`)
