@@ -5,9 +5,9 @@ import asyncHandler from "express-async-handler";
 import {ProjectParams} from '../../shared/types/project.types';
 import {UpdateProjectDTO} from './project.schema';
 
-export const getAllProjects =asyncHandler( async (req: Request, res: Response, next: NextFunction) => {
-    const projects = await projectService.getAllProjects(req.userId!);
-    res.status(StatusCodes.OK).json({ status: "success", data: { projects } });
+export const getAllProjects = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+  const projects = await projectService.getAllProjects(req.userId!, req.userRole!);
+  res.status(StatusCodes.OK).json({ status: "success", data: { projects } });
 });
 
 export const getProject = asyncHandler(async (req: Request<ProjectParams>, res: Response, next: NextFunction) => {

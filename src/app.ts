@@ -7,6 +7,9 @@ import cookieParser from "cookie-parser";
 import  globalErrorHandler  from "./shared/middlewares/error.middleware";
 import authRouter from "./domain_modules/auth/auth.router";
 import projectRoutes from "./domain_modules/project/project.routes";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger";
+
 
 
 const app = express();
@@ -20,6 +23,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use(morgan("dev"));
+
+app.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/projects", projectRoutes);

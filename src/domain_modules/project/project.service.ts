@@ -4,8 +4,12 @@ import { StatusCodes } from "http-status-codes";
 import { CreateProjectDTO, UpdateProjectDTO } from "./project.schema";
 import { ProjectNotFoundError } from "./exceptions/ProjectNotFoundError";
 import { ProjectOwnerForbiddenError } from "./exceptions/ProjectOwnerForbiddenError";
+import { UserRole } from "../user/user.entity";
 
-export const getAllProjects = async (userId: string) => {
+export const getAllProjects = async (userId: string, userRole: string) => {
+  if (userRole === UserRole.ADMIN) {
+    return await projectRepo.projectRepository.findAllProjects();
+  }
   return await projectRepo.projectRepository.findProjectsByOwnerId(userId);
 };
 

@@ -5,16 +5,11 @@ import asyncHandler from "express-async-handler";
 import { TaskStatus,TaskPriority } from "./task.entity";
 
 export const getTasksByProject = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const { projectId } = req.params as { projectId: string };
-    const {status,priority} = req.query as {
-        status?:TaskStatus,
-        priority?:TaskPriority
-    };
-    const tasks = await taskService.getTasksByProject(projectId, { status, priority });
-    res.status(StatusCodes.OK).json({ status: "success", data: { tasks } });
-  
+  const { projectId } = req.params as { projectId: string };
+  const { status, priority } = req.query as { status?: TaskStatus; priority?: TaskPriority };
+  const tasks = await taskService.getTasksByProject(projectId, req.userId!, req.userRole!, { status, priority });
+  res.status(StatusCodes.OK).json({ status: "success", data: { tasks } });
 });
-
 export const getTaskById = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const { id, projectId } = req.params as { id: string; projectId: string };
     const task = await taskService.getTaskById(id, projectId);

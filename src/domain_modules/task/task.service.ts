@@ -7,12 +7,22 @@ import { ProjectNotFoundError } from "../project/exceptions/ProjectNotFoundError
 import { TaskNotFoundError } from "./exceptions/TaskNotFoundError";
 import { ProjectOwnerForbiddenError } from "../project/exceptions/ProjectOwnerForbiddenError";
 import { TaskStatus,TaskPriority } from "./task.entity";
+import { UserRole } from "../user/user.entity";
 
-export const getTasksByProject = async (projectId: string, filters?:{status?:TaskStatus,priority?:TaskPriority}) => {
+export const getTasksByProject = async (
+  projectId: string,
+  userId: string,
+  userRole: string,
+  filters?: { status?: TaskStatus; priority?: TaskPriority }
+) => {
   const project = await projectService.getProjectById(projectId);
   if (!project) throw new ProjectNotFoundError();
 
-  return taskRepository.findTasksByProjectId(projectId,filters);
+  if (userRole !== UserRole.ADMIN && project.owner_id !== userId) {
+    throw new ProjectOwnerForbiddenError();
+  }
+
+  return taskRepository.findTasksByProjectId(projectId, filters);
 };
 
 export const getTaskById = async (id: string, projectId: string) => {

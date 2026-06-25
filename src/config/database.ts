@@ -12,5 +12,7 @@ export const AppDataSource = new DataSource({
     entities: [User, Project, Task,RefreshToken],
     synchronize:env.NODE_ENV === "development",
     logging:env.NODE_ENV === "development",
+    migrations: ["src/database/migrations/*.ts"],
+    migrationsRun: env.NODE_ENV === "production",
 
 })
